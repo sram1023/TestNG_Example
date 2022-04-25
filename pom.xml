@@ -46,6 +46,13 @@
             <artifactId>webdrivermanager</artifactId>
             <version>5.1.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-picocontainer -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
+            <version>7.2.3</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

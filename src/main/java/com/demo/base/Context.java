@@ -1,6 +1,5 @@
 package com.demo.base;
 
-import com.github.dockerjava.api.model.Capability;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -8,7 +7,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -23,11 +21,11 @@ import java.util.Properties;
 public class Context {
 
     public static WebDriver driver;
-    protected Properties properties;
-    protected static Logger log;
+    public Properties properties;
+    public static Logger log;
 
     public Context() {
-        try (FileInputStream ip = new FileInputStream(
+            try (FileInputStream ip = new FileInputStream(
                 "config.properties")) {
             properties = new Properties();
             properties.load(ip);
@@ -38,10 +36,11 @@ public class Context {
     }
 
 
-    protected void init() {
+    public void init() {
         this.logger();
         String browserName = properties.getProperty("browser");
         driver = getDriver(browserName);
+//        driver = getSpecificDriver(browserName);
         log.info(browserName + " is configured");
         driver.get(properties.getProperty("url"));
         driver.manage().window().maximize();
@@ -50,33 +49,46 @@ public class Context {
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
     }
 
-    protected WebDriver getDriver(String browser) {
+    public WebDriver getDriver(String browser) {
+//        if (driver == null) {
+            switch (browser) {
+                case "chrome":
+                    WebDriverManager.chromedriver().setup();
+                    driver = new ChromeDriver();
+                    break;
+                case "ie":
+                    WebDriverManager.iedriver().setup();
+                    driver = new InternetExplorerDriver();
+                    break;
+                case "firefox":
+                    WebDriverManager.firefoxdriver().setup();
+                    driver = new FirefoxDriver();
+                    break;
+                default:
+                    log.error("browser not matched");
+                    break;
+            }
+//        }
+
+        return driver;
+    }
+
+    protected WebDriver getSpecificDriver(String browser) {
         try {
             DesiredCapabilities capabilities = new DesiredCapabilities();
             URL url = new URL("http://localhost:4444/wd/hub");
-            if (driver == null) {
-                switch (browser) {
-                    case "chrome":
-                        WebDriverManager.chromedriver().setup();
-                        capabilities.setCapability(CapabilityType.BROWSER_NAME, "chrome");
-//                    driver = new ChromeDriver();
-                        driver = new RemoteWebDriver(url, capabilities);
-                        break;
-                    case "ie":
-                        WebDriverManager.iedriver().setup();
-                        driver = new InternetExplorerDriver();
-                        break;
-                    case "firefox":
-                        WebDriverManager.firefoxdriver().setup();
-                        driver = new FirefoxDriver();
-                        break;
-                    default:
-                        log.error("browser not matched");
-                        break;
-                }
+            switch (browser) {
+                case "chrome":
+                    capabilities.setCapability(CapabilityType.BROWSER_NAME, "chrome");
+                    break;
+                case "firefox":
+                    capabilities.setCapability(CapabilityType.BROWSER_NAME, "firefox");
+                    break;
+                default:
+                    log.error("browser not matched");
+                    break;
             }
-
-
+            driver = new RemoteWebDriver(url, capabilities);
         } catch (MalformedURLException e) {
             log.error(e);
         }
@@ -89,7 +101,7 @@ public class Context {
         PropertyConfigurator.configure("src/test/resources/log4j.xml");
     }
 
-    protected void tearDown() {
+    public void tearDown() {
         driver.manage().deleteAllCookies();
         driver.close();
     }

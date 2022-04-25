@@ -3,7 +3,7 @@
 <suite name="All Test Suite">
     <test verbose="2" preserve-order="true" name="C:/Users/ramkumar.raja/IdeaProjects/TestNGDemo">
         <classes>
-            <class name="collection.login.LogIn">
+            <class name="collection.login.LoggIn">
                 <methods>
                     <include name="login"/>
                 </methods>
@@ -14,7 +14,6 @@
                     <include name="personalInformation"/>
                 </methods>
             </class>
-
         </classes>
     </test>
 </suite>

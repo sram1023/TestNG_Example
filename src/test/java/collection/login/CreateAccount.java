@@ -6,11 +6,16 @@ import org.testng.annotations.Test;
 
 public class CreateAccount extends Context {
 
-    AccountCreation accountCreation = new AccountCreation();
+    AccountCreation accountCreation;
+//    Context context;
+    public CreateAccount() {
+//        this.context = context;
+        accountCreation = new AccountCreation();
+    }
 
     @Test
     public void emailAddress(){
-        accountCreation.setEmailAddress("cdd@test1.com");
+        accountCreation.setEmailAddress(properties.getProperty("email"));
         accountCreation.clickCreateAccount();
     }
 
@@ -20,7 +25,7 @@ public class CreateAccount extends Context {
         accountCreation.firstName("John");
         accountCreation.lastName("Miller");
         accountCreation.password("test123");
-        log.info("Personal information details are entered");
+//        Context.log.info("Personal information details are entered");
     }
 
 }
